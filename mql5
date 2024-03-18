@@ -1,0 +1,86 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                           Constructor Simple MT4 |
+//|                                     https://forexroboteasy.com   |
+//|                                                    Forex Robot Easy Team |
+//+------------------------------------------------------------------+
+
+// Include necessary libraries
+#include <Trade\Trade.mqh>
+#include <Indicators\Bar.mqh>
+#include <Indicators\Envelopes.mqh>
+#include <Indicators\MovingAverages.mqh>
+#include <Indicators\Ichimoku.mqh>
+#include <Indicators\ParabolicSAR.mqh>
+
+// Define input parameters
+input double LotSize = 0.1; // Trading lot size
+input int StopLoss = 50; // Stop loss level in pips
+input int TakeProfit = 100; // Take profit level in pips
+
+// Create instances of the necessary indicators
+CBar bar;
+CEnvelopes envelopes;
+CMovingAverages ma;
+CIchimoku ichimoku;
+CParabolicSAR sar;
+
+// Create an instance of the trade class
+CTrade trade;
+
+//+------------------------------------------------------------------+
+//| Expert Advisor initialization function                           |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // Initialize the indicators
+   bar.Create();
+   envelopes.Create();
+   ma.Create();
+   ichimoku.Create();
+   sar.Create();
+
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert Advisor start function                                     |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+   // Check entry signals for each strategy
+   if(bar.CheckSignal())
+   {
+      // Execute trade for Bar trading strategy
+      trade.Open(OP_BUY, LotSize, Symbol(), Ask, StopLoss, TakeProfit);
+   }
+   else if(envelopes.CheckSignal())
+   {
+      // Execute trade for Envelopes strategy
+      trade.Open(OP_SELL, LotSize, Symbol(), Bid, StopLoss, TakeProfit);
+   }
+   else if(ma.CheckSignal())
+   {
+      // Execute trade for Moving Averages strategy
+      trade.Open(OP_BUY, LotSize, Symbol(), Ask, StopLoss, TakeProfit);
+   }
+   else if(ichimoku.CheckSignal())
+   {
+      // Execute trade for Ichimoku strategy
+      trade.Open(OP_SELL, LotSize, Symbol(), Bid, StopLoss, TakeProfit);
+   }
+   else if(sar.CheckSignal())
+   {
+      // Execute trade for Parabolic SAR strategy
+      trade.Open(OP_BUY, LotSize, Symbol(), Ask, StopLoss, TakeProfit);
+   }
+}
+
+//+------------------------------------------------------------------+
+//| Expert Advisor deinitialization function                         |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   // Clean up and close any open trades
+   trade.CloseAll();
+}
